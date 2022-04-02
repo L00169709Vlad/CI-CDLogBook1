@@ -45,7 +45,7 @@ jobs:
       name: Development
       url: 'http://dev.myapp.com'
     env:
-      SLACK_SECRET_URL: ${{ secrets.SLACK_SECRET_URL }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_SECRET_URL }}
     steps:
       - name: Deploy
         run: echo Your code is being deployed to dev.myapp.com!
