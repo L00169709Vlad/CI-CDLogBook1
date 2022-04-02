@@ -8,7 +8,12 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
-
+    inputs:
+      job:
+        description: 'Job to run.'
+        required: true
+        default: 'ConfirmDeployment'
+        
 # Define some jobs that should run
 
 jobs:
@@ -71,19 +76,26 @@ jobs:
       - name: Deploy
         run: echo Your code is being deployed to staging at http://test.myapp.com
   
-# Our deployment to production job
 
+# Our confirmation for deployment to production job
+  ConfirmDeployment:
+    name: Confirm Deployment
+    needs: [DeployStaging]
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.job == 'ConfirmDeployment'}}
+    steps: 
+      - name: Confirm Deployment to Production
+        run: echo ${{ github.event.inputs.job == 'ConfirmDeployment'}}
+        
+        
+# Our deployment to production job
   DeployProduction:
     name: Deploy to production
-    needs: [DeployStaging]
+    needs: [ConfirmDeployment]
     runs-on: ubuntu-latest
     environment:
       name: Production
       url: 'http://www.myapp.com'
     steps: 
-      # Checkout
-      - name: Checkout
-        uses: actions/checkout@v1
-      # Deployment
       - name: Deploy
         run: echo The app is live at http://www.myapp.com
