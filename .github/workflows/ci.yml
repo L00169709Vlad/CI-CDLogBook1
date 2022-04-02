@@ -44,10 +44,20 @@ jobs:
     environment:
       name: Development
       url: 'http://dev.myapp.com'
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_SECRET_URL }}
     steps:
       - name: Deploy
         run: echo Your code is being deployed to dev.myapp.com!
-
+      
+      - name: Slack Notification
+        uses: act10ns/slack@v1
+        with: 
+          status: ${{ job.status }}
+          channel: '#git-cicd'
+          message: Build branch Successfully
+        if: always()
+        
 # Our deployment to Staging environment job
   DeployStaging:
     name: Deploy to DeployStaging
