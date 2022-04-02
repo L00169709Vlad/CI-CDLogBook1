@@ -81,5 +81,9 @@ jobs:
       name: Production
       url: 'http://www.myapp.com'
     steps: 
+      # Checkout
+      - name: Checkout
+        uses: actions/checkout@v1
+      # Deployment
       - name: Deploy
         run: echo The app is live at http://www.myapp.com
