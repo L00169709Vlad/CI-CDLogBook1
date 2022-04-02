@@ -14,13 +14,18 @@ on:
 jobs:
   Build:
     runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x]
+        
     steps:
       - uses: actions/checkout@v3
-
-      - name: Compile
+      
+      - name: Compile on Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
-          node-version: "12.x"
+          node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm run
       - run: npm test -- --coverage
@@ -28,7 +33,9 @@ jobs:
           CI: true
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
-        
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          
   DeployDev:
     name: Deploy to Dev
     if: github.event_name == 'pull_request'
