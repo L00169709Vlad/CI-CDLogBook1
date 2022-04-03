@@ -64,8 +64,8 @@ jobs:
         with: 
           status: ${{ job.status }}
           channel: '#git-cicd'
-          message: Tests failed, please review the failing tests and update the PR acordingly
-        if: ${{ job.status == 'failure' }}
+          message: Tests status ${{ job.status }}
+        if: always()
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
 
