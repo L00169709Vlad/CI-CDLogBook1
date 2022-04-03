@@ -2,7 +2,7 @@ name: CI + CD demo pipeline
 
 # Define when the workflow should run. On a push to main, a PR to main or manually with workflow_dispatch
 
-version:2.1
+version: 2.1
 jobs: 
   build:
     docker:
