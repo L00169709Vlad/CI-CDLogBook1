@@ -33,16 +33,41 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm run
+    
+      - name: Upload artifacts
+        uses: actions/upload-artifact@main
+        with: 
+          name: webpack artifacts
+          path: public/
+
+  Test:
+    runs-on: ubuntu-latest
+    needs: [Build]
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x]
+        
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@main
+        with: 
+          name: webpack artifacts
+          path: public/
+      
+      - name: Test on Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
       - run: npm test -- --coverage
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
 
-          
+
   DeployDev:
     name: Deploy to Dev
     if: github.event_name == 'pull_request'
-    needs: [Build]
+    needs: [Test]
     runs-on: ubuntu-latest
     environment:
       name: Development
@@ -53,13 +78,21 @@ jobs:
       - name: Deploy
         run: echo Your code is being deployed to dev.myapp.com!
       
-      - name: Slack Notification
+      - name: Slack Notification Success
         uses: act10ns/slack@v1
         with: 
           status: ${{ job.status }}
           channel: '#git-cicd'
-          message: Job status ${{ job.status }}
-        if: always()
+          message: DeployDev complete, please review the PR.
+        if: ${{ job.status == 'success' }}
+       
+      - name: Slack Notification Fail
+        uses: act10ns/slack@v1
+        with: 
+          status: ${{ job.status }}
+          channel: '#git-cicd'
+          message: DeployDev failed, please review the logs and update the PR accordingly
+        if: ${{ job.status == 'fail' }}
         
 # Our deployment to Staging environment job
   DeployStaging:
