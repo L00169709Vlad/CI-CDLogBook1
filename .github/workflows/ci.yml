@@ -48,6 +48,8 @@ jobs:
         node-version: [12.x, 14.x]
         
     steps:
+      - run: npm ci
+
       - name: Download artifacts
         uses: actions/download-artifact@main
         with: 
